@@ -4,6 +4,10 @@ A **desktop application** built with **Electron.js** and **Tailwind CSS** to man
 
 This tool allows users to **switch between static and dynamic (DHCP) IP addresses**, view **network speed**, **public IP**, and **manage profile-based IPs** for quick switching. Built to be **fast, minimalistic, and user-friendly**.
 
+### 🖥️ Main Dashboard
+
+![Main UI](./screenshots/main-ui.png)
+
 ---
 
 ## ✨ Features
@@ -31,7 +35,3 @@ git clone https://github.com/your-username/ip-manager.git
 cd ip-manager
 npm install
 npm start
-
-### 🖥️ Main Dashboard
-
-![Main UI](./screenshots/main-ui.png)
