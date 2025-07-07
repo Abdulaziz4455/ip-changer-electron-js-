@@ -1,0 +1,32 @@
+{
+  "name": "ip-manager",
+  "version": "1.0.0",
+  "author": {
+    "name": "Abdul Aziz",
+    "email": "abdulaziz4455m@gmail.com"
+  },
+  "description": "A simple Electron app to change IP settings easily.",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "dependencies": {
+    "systeminformation": "^5.0.0"
+  },
+  "devDependencies": {
+    "electron": "latest",
+    "electron-builder": "latest"
+  },
+  "build": {
+    "appId": "com.zeez.ipManager",
+    "productName": "IP Manager",
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico",
+      "requestedExecutionLevel": "requireAdministrator"
+
+    }
+  }
+}
