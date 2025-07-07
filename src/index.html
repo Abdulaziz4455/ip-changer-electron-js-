@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" class="antialiased">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IP Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              // border: "#d1d5db",
+              // grayText: "#6b7280",
+              // grayBg: "#f9fafb",
+              // black: "#111111",
+              // gray: "#e5e7eb"
+            }
+          }
+        }
+      };
+    </script>
+  </head>
+
+  <body class="bg-grayBg text-black">
+    <div class="flex flex-col min-h-screen">
+      <!-- Header -->
+      <header class="bg-gray-800 text-white px-6 py-3">
+        <h1 class="text-lg font-semibold">IP Manager</h1>
+      </header>
+
+      <!-- Main -->
+      <main class="flex-1 p-6 space-y-6 overflow-auto">
+
+        <!-- Adapter Section -->
+        <div class="bg-white border border-border rounded-lg p-6 space-y-4">
+          <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div class="flex-1 min-w-[250px]">
+              <label for="networkAdapter" class="block text-sm font-medium text-grayText mb-2">Network Adapter</label>
+              <div class="flex gap-2">
+                <select id="networkAdapter" class="w-full text-sm px-3 py-2 border border-border rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-black transition">
+                  <option value="">Loading adapters...</option>
+                </select>
+                <button id="refreshAdapters" class="px-4 py-2 text-sm bg-black text-white rounded-md hover:bg-gray-900 transition">Refresh</button>
+              </div>
+            </div>
+
+            <div class="flex gap-2 md:mt-6">
+              <button id="enableAdapter" class="px-4 py-2 text-sm bg-black text-white rounded-md hover:bg-gray-900 transition">Enable</button>
+              <button id="disableAdapter" class="px-4 py-2 text-sm border border-border text-black rounded-md hover:bg-gray-100 transition">Disable</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Network Info & Speed -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-white border border-border rounded-lg p-6 space-y-3">
+            <h2 class="text-base font-medium">Current Network Information</h2>
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between"><span>MAC Address:</span><span id="macAddress">-</span></div>
+              <div class="flex justify-between"><span>Status:</span><span id="networkStatus">-</span></div>
+              <div class="flex justify-between"><span>DHCP:</span><span id="dhcpStatus" class="bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-xs">Unknown</span></div>
+              <div class="flex justify-between"><span>WAN IP:</span><span id="wanIp">-</span></div>
+            </div>
+          </div>
+
+          <div class="bg-white border border-border rounded-lg p-6 space-y-4">
+            <div class="flex justify-between items-center">
+              <h2 class="text-base font-medium">Network Speed</h2>
+              <label class="flex items-center gap-2 text-sm text-grayText">
+                <input type="checkbox" id="networkMonitorToggle" class="form-checkbox accent-black" checked />
+                Monitor
+              </label>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="border border-border bg-gray-50 p-3 rounded">
+                <div class="text-xs text-grayText">Download</div>
+                <div id="downloadSpeed" class="text-lg font-semibold">0 KB/s</div>
+              </div>
+              <div class="border border-border bg-gray-50 p-3 rounded">
+                <div class="text-xs text-grayText">Upload</div>
+                <div id="uploadSpeed" class="text-lg font-semibold">0 KB/s</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <input type="range" id="refreshInterval" min="500" max="3000" step="100" value="1000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" />
+              <span id="intervalValue" class="text-xs text-grayText w-16 text-center">1000 ms</span>
+              <button id="refreshSpeed" class="px-3 py-1 text-sm bg-black text-white rounded-md hover:bg-gray-900 transition">Refresh</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick IP Profiles -->
+        <div class="bg-white border border-border rounded-lg overflow-hidden">
+          <div class="flex justify-between items-center p-4 border-b border-border">
+            <h2 class="text-base font-medium">Quick IP Profiles</h2>
+            <div class="flex gap-2">
+              <button id="addQuickIp" class="px-3 py-1 text-sm bg-black text-white rounded-md hover:bg-gray-900 transition">Add</button>
+              <button id="deleteAllQuickIp" class="px-3 py-1 text-sm border border-border text-black rounded-md hover:bg-gray-100 transition">Clear</button>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-sm text-left">
+              <thead class="bg-gray-50 border-b border-border">
+                <tr>
+                  <th class="px-4 py-2 font-medium text-gray-600">Name</th>
+                  <th class="px-4 py-2 font-medium text-gray-600">IP</th>
+                  <th class="px-4 py-2 font-medium text-gray-600">Subnet</th>
+                  <th class="px-4 py-2 font-medium text-gray-600">Gateway</th>
+                  <th class="px-4 py-2 font-medium text-gray-600">DNS</th>
+                  <th class="px-4 py-2 font-medium text-gray-600">Alt DNS</th>
+                  <th class="px-4 py-2 font-medium text-gray-600">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="quickIpList" class="divide-y divide-gray-100">
+                <tr>
+                  <td colspan="7" class="px-4 py-4 text-center text-gray-400">No IP profiles saved</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- IP Config -->
+        <div class="bg-white border border-border rounded-lg p-6 space-y-6">
+          <h2 class="text-base font-medium">IP Configuration</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">IP Address</label>
+              <div class="flex gap-2">
+                <input type="text" id="ipAddress" value="192.168.1.100" class="flex-1 px-3 py-2 border border-border rounded-md text-sm focus:ring-1 focus:ring-black focus:outline-none" />
+                <button id="updateIp" class="px-3 py-2 text-sm bg-black text-white rounded-md hover:bg-gray-900 transition">Save</button>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Subnet Mask</label>
+              <input type="text" id="subnetMask" value="255.255.255.0" class="w-full px-3 py-2 border border-border rounded-md text-sm focus:ring-1 focus:ring-black focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Gateway</label>
+              <input type="text" id="gateway" value="192.168.18.1" class="w-full px-3 py-2 border border-border rounded-md text-sm focus:ring-1 focus:ring-black focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Preferred DNS</label>
+              <input type="text" id="dns" value="8.8.8.8" class="w-full px-3 py-2 border border-border rounded-md text-sm focus:ring-1 focus:ring-black focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Alternate DNS</label>
+              <input type="text" id="altDns" value="8.8.4.4" class="w-full px-3 py-2 border border-border rounded-md text-sm focus:ring-1 focus:ring-black focus:outline-none" />
+            </div>
+            <div class="flex items-end">
+              <button id="applyConfig" class="w-full px-4 py-2 text-sm bg-black text-white rounded-md hover:bg-gray-900 transition">Apply Configuration</button>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-3">
+            <button id="enableDhcp" class="px-4 py-2 text-sm bg-black text-white rounded-md hover:bg-gray-900 transition">Enable DHCP</button>
+            <button id="dhcpRelease" class="px-4 py-2 text-sm border border-border text-black rounded-md hover:bg-gray-100 transition">DHCP Release</button>
+            <button id="dhcpRenew" class="px-4 py-2 text-sm border border-border text-black rounded-md hover:bg-gray-100 transition">DHCP Renew</button>
+          </div>
+        </div>
+
+      </main>
+
+<!-- Footer -->
+<!-- Footer -->
+<footer class="bg-gray-800 text-white text-sm px-6 py-2 flex justify-between items-center mb-0">
+  <!-- Left: Connection Status -->
+  <div id="connectionStatus" class="flex items-center gap-2">
+    <span class="h-2 w-2 rounded-full bg-gray-400 inline-block"></span>
+    <span>Loading...</span>
+  </div>
+
+  <!-- Center: Made with Love (hover to show email) -->
+  <div class="relative group text-gray-300 text-center cursor-pointer">
+    <div>
+      Made with <span class="text-red-500">❤️</span> by Aziz
+    </div>
+    <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-gray-700 text-white text-xs px-3 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+abdulaziz4455m@gmail.com    </div>
+  </div>
+
+  <!-- Right: Last Updated -->
+  <div id="lastUpdated" class="text-gray-300 text-right">
+    Last updated: -
+  </div>
+</footer>
+
+
+
+
+    <!-- Modal -->
+    <div id="ipProfileModal" class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center hidden">
+      <div class="bg-white w-full max-w-md rounded-lg border border-border shadow p-6 space-y-4">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-medium">Add IP Profile</h3>
+          <button id="closeModal" class="text-grayText hover:text-black">✕</button>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Profile Name</label>
+            <input type="text" id="profileName" class="w-full px-3 py-2 border border-border rounded-md text-sm" placeholder="Office Network" />
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <input id="profileIp" placeholder="IP Address" class="px-3 py-2 border border-border rounded-md text-sm" />
+            <input id="profileSubnet" placeholder="Subnet Mask" class="px-3 py-2 border border-border rounded-md text-sm" />
+            <input id="profileGateway" placeholder="Gateway" class="px-3 py-2 border border-border rounded-md text-sm" />
+            <input id="profileDns" placeholder="DNS" class="px-3 py-2 border border-border rounded-md text-sm" />
+            <input id="profileAltDns" placeholder="Alt DNS" class="px-3 py-2 border border-border rounded-md text-sm" />
+          </div>
+          <div class="flex justify-end gap-2">
+            <button id="cancelAddProfile" class="px-4 py-2 bg-gray-200 text-black rounded-md text-sm hover:bg-gray-300">Cancel</button>
+            <button id="saveProfile" class="px-4 py-2 bg-black text-white rounded-md text-sm hover:bg-gray-900">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Script -->
+    <script src="renderer.js"></script>
+  </body>
+</html>
