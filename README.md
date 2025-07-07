@@ -6,7 +6,7 @@ This tool allows users to **switch between static and dynamic (DHCP) IP addresse
 
 ### 🖥️ Main Dashboard
 
-![Main UI](./screenshots/main-ui.png)
+![Main UI](./src/public/screenshots/main-ui.png)
 
 ---
 
